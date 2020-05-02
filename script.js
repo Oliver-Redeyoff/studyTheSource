@@ -41,7 +41,6 @@ fetch(url, {
     .then((data) => {
         console.log(data)
         articles = data.articles
-        document.getElementById("test").innerHTML = data.articles[0].content
         compare_articles(articles)
     });
 
@@ -94,41 +93,65 @@ function compare_articles(data){
     // now look at each combination of article and see if they are similar
 
     var articlePairs = []
+    var dataPairs = []
 
     for(var source=0 ; source<(sources.length-1) ; source+=1){
         for (title in filteredContents){
             var out = compareArticles(filteredContents[source][title], filteredContents.slice(source+1, sources.length))
             if(out.length > 0){
+                var index = []
                 for(pair in out){
-                    articlePairs.push(out[pair])
+                    // articlePairs.push(out[pair])
+                    // find the index of the second article
+                    for(group in filteredContents){
+                        console.log(filteredContents[group].indexOf(out[pair][1]))
+                        if(filteredContents[group].indexOf(out[pair][1]) != -1){
+                            index = [group, filteredContents[group].indexOf(out[pair][1])]
+                        }
+                    }
+                    dataPairs.push( [ data[indexes[source][title]], data[indexes[index[0]][index[1]]] ] )
                 }
             }
         }
     }
 
-    console.log(articlePairs)
+    console.log(dataPairs)
 
+    var newHtml = ""
     // now populate ui
-    for(pair in articlePairs){
-        
+    for(pair in dataPairs){
+        newHtml += "<div id='wrapper'>"
+        for(element in dataPairs[pair]){
+            newHtml += "<div id='wrapper2'><h2>" + dataPairs[pair][element].title + "<br><a>" + dataPairs[pair][element].source.name + "</a>" + "</h2>"
+            if(dataPairs[pair][element].content != null){
+                newHtml += "<p>" + dataPairs[pair][element].content + "</p></div>"
+            } else {
+                newHtml += "</div>"
+            }
+        }
+        newHtml += "</div>"
     }
 
+    document.getElementById("pairContainer").innerHTML = newHtml
 
 }
 
+
+// function just removes list of stop words from string passed in
 function removeStopWords(txt){
     var expStr = stop_words.join("|");
 	return txt.replace(new RegExp('\\b(' + expStr + ')\\b', 'gi'), '')
                     .replace(/\s{2,}/g, ' ');
 }
 
+
+// function compares an article with a stack of other articles, and returns a list of articles it is similar to
 function compareArticles(article, stack){
 
     var pairs = []
 
     // stop article from being null
     article = ""+article
-
 
     for (group in stack){
         for (article2 in stack[group]){
@@ -149,6 +172,7 @@ function compareArticles(article, stack){
     return pairs
 
 }
+
 
 // returns similarity of two strings
 function comparePhrases(str1, str2){
@@ -177,6 +201,7 @@ function comparePhrases(str1, str2){
     return score
 
 }
+
 
 function compareStr(str1, str2){
     // if both words are longer than 2 characters
