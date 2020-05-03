@@ -117,12 +117,39 @@ function compare_articles(data){
 
     console.log(dataPairs)
 
+    // now look through pairs, if they contain a common element join them
+    for(pair1 in dataPairs){
+        for(pair2 in dataPairs){
+            
+            if(pair1 != pair2){
+                // see if any element from the first pair is in the second pair
+                for(element in dataPairs[pair1]){
+                    if(dataPairs[pair2].includes(dataPairs[pair1][element])){
+                        // push all elements into that pair exept the common one
+                        for(element2 in dataPairs[pair1]){
+                            if(element != element2 && dataPairs[pair2].includes(dataPairs[pair1][element2])==false){
+                                dataPairs[pair2].push(dataPairs[pair1][element2])
+                            }
+                        }
+                        dataPairs.splice(pair1, 1)
+                        break
+                    }
+                }
+            }
+
+        }
+    }
+
+    console.log(dataPairs)
+
     var newHtml = ""
     // now populate ui
     for(pair in dataPairs){
         newHtml += "<div id='wrapper'>"
         for(element in dataPairs[pair]){
-            newHtml += "<div id='wrapper2'><h2>" + dataPairs[pair][element].title + "<br><a>" + dataPairs[pair][element].source.name + "</a>" + "</h2>"
+            newHtml += "<div id='wrapper2' onclick='window.open(\"" + dataPairs[pair][element].url + "\")'>" 
+            + "<img src='Assets/" + dataPairs[pair][element].source.id + ".png'></img>"
+            + "<h2>" + dataPairs[pair][element].title + "</h2>"
             if(dataPairs[pair][element].content != null){
                 newHtml += "<p>" + dataPairs[pair][element].content + "</p></div>"
             } else {
