@@ -24,11 +24,10 @@ def hello_world(request):
         return ('', 204, headers)
 
     request_json = request.get_json()
+
     headers = {
         'Access-Control-Allow-Origin': '*',
     }
-
-    request_json = request.get_json()
 
     return f"This is working"
     
