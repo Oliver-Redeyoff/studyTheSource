@@ -55,9 +55,5 @@ def hello_world(request):
 
     return(json.dumps(dic), 200, headers)
     
-    # if request.args and 'message' in request.args:
-    #     return request.args.get('message')
-    # elif request_json and 'message' in request_json:
-    #     return request_json['message']
-    # else:
-    #     return f'Hello World!'
+# command to run to deploy :
+# gcloud functions deploy articleGroups --runtime python37 --trigger-http --allow-unauthenticated
