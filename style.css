@@ -6,7 +6,6 @@ h1{
     border-bottom: 1px solid black;
     padding-bottom: 20px;
 }
-
 h2{ 
     font-family: Arial, Helvetica, sans-serif;
     margin-left: 40px;
@@ -32,7 +31,7 @@ h2{
     padding-left: 20px;
     padding-top: 5px;
     padding-bottom: 5px;
-    margin-bottom: 100px;
+    margin-bottom: 75px;
 }
 
 #pairContainer #wrapper2 {
@@ -40,20 +39,43 @@ h2{
     font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(253, 253, 253);
     padding: 20px;
-    padding-top: 1px;
+    padding-top: 5px;
+    padding-bottom: 10px;
     margin-left: 10px;
     margin-right: 10px;
     -webkit-box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff;
     box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff;
     border-radius: 10px;
     width: 45%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
-    border: 1px solid black;
 }
 #pairContainer #wrapper2:hover {
     font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(224, 247, 250);
 }
+@media screen and (max-width: 1100px){
+    #pairContainer #wrapper {
+        display: block;
+        /* justify-content: center; */
+        /* align-items: center; */
+        border-left: 2px solid black;
+        border-radius: 1px;
+        padding-left: 20px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-bottom: 100px;
+    }
+    #pairContainer #wrapper2 {
+        display: block;
+        margin-left: calc(10% - 20px);
+        margin-right: 10%;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        width: 80%;
+    }
+}
+
 
 #pairContainer img {
     position: relative;
@@ -66,6 +88,10 @@ h2{
 #pairContainer p {
     padding: 5px;
 } 
+#pairContainer #error{
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
 #pairContainer a {
     font-size: 16px;
     padding: 5px;

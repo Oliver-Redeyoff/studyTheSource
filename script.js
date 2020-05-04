@@ -118,6 +118,7 @@ function compare_articles(data){
     console.log(dataPairs)
 
     // now look through pairs, if they contain a common element join them
+
     for(pair1 in dataPairs){
         for(pair2 in dataPairs){
             
@@ -144,22 +145,31 @@ function compare_articles(data){
 
     var newHtml = ""
     // now populate ui
-    for(pair in dataPairs){
-        newHtml += "<div id='wrapper'>"
-        for(element in dataPairs[pair]){
-            newHtml += "<div id='wrapper2' onclick='window.open(\"" + dataPairs[pair][element].url + "\")'>" 
-            + "<img src='Assets/" + dataPairs[pair][element].source.id + ".png'></img>"
-            + "<h2>" + dataPairs[pair][element].title + "</h2>"
-            if(dataPairs[pair][element].content != null){
-                newHtml += "<p>" + dataPairs[pair][element].content + "</p></div>"
-            } else {
-                newHtml += "</div>"
-            }
-        }
-        newHtml += "</div>"
-    }
 
-    document.getElementById("pairContainer").innerHTML = newHtml
+    if(dataPairs.length == 0){
+        newHtml = "<p id='error'>Sorry, there are no similar articles in the news at the moment</p>"
+        console.log(document.getElementById("pairContainer").innerHTML) 
+        document.getElementById("pairContainer").innerHTML = newHtml
+        console.log(document.getElementById("pairContainer").innerHTML)
+    } else {
+
+        for(pair in dataPairs){
+            newHtml += "<div id='wrapper'>"
+            for(element in dataPairs[pair]){
+                newHtml += "<div id='wrapper2' onclick='window.open(\"" + dataPairs[pair][element].url + "\")'>" 
+                + "<img src='Assets/" + dataPairs[pair][element].source.id + ".png'></img>"
+                + "<h2>" + dataPairs[pair][element].title + "</h2>"
+                if(dataPairs[pair][element].content != null){
+                    newHtml += "<p>" + dataPairs[pair][element].content + "</p></div>"
+                } else {
+                    newHtml += "</div>"
+                }
+            }
+            newHtml += "</div>"
+        }
+
+        document.getElementById("pairContainer").innerHTML = newHtml
+    }
 
 }
 
