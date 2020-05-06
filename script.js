@@ -4,8 +4,6 @@
 // fox-news
 // abc
 // cbc-news
-// fox-news
-// google-news
 // independent
 // msnbc
 // newsweek
@@ -25,7 +23,7 @@ var stop_words = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "
 "very", "'", "s", "t", "can", "will", "just", "don", "should", "now", "cnn", "bbc", "-"]
 
 var url = "https://newsapi.org/v2/top-headlines?" 
-    + "sources=bbc-news,cnn,cbc-news,bloomberg,fox-news,the-washington-post,time,newsweek,abc,independent" 
+    + "sources=bbc-news,cnn,cbc-news,fox-news,the-washington-post,time,newsweek,abc,independent,msnbc" 
     + "&pageSize=100" 
     + "&apiKey=72d48922d4644d03bcda247a8ba59479";
 
@@ -56,7 +54,7 @@ function compare_articles(data){
     for (article in data){
 
         var id = data[article].source.id
-        var content = data[article].title + data[article].description + data[article].content
+        var content = data[article].title + " " + data[article].description + " " + data[article].content
 
         if (sources.includes(id) == false){
             sources.push(id)
@@ -171,6 +169,9 @@ function compare_articles(data){
         document.getElementById("pairContainer").innerHTML = newHtml
     }
 
+    console.log(comparePhrases("canadians comfortable pace easing restrictions: poll | cbc newsas provinces start tiptoe toward normalcy gently lifting restrictions aimed slowing spread covid19, new poll suggests canadians largely happy pace. provinces start tiptoe toward normalcy gently lifting restrictions aimed slowing spread covid19, new poll suggests canadians largely happy pace. people provinces taking steps reopen 60 70 per ce… [+3299 chars]",
+"canada shifts un security council campaign pitch response pandemic | cbc newswith united nations poised announce whether vote nonpermanent security council seats go ahead scheduled june, canada doubling bid seat — adjusting pitch take covid19 crisis account. united nations poised announce whether vote nonpermanent security council seats go ahead scheduled june, canada doubling bid seat adjusting pitch take covid19 crisis account. prime mini… [+5243 chars]"))
+
 }
 
 
@@ -195,6 +196,7 @@ function compareArticles(article, stack){
             // console.log(stack[group][article2])
             var score = comparePhrases(article, stack[group][article2])
             var minLen = Math.min(article.split(" ").length, stack[group][article2].split(" ").length)
+            console.log(minLen)
 
             if(score > minLen){
                 console.log("these two articles are similar, with a score of " + score)
