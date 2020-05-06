@@ -3,37 +3,6 @@ import json
 import requests
 import base64
 
-min_word_length = 2
-stop_words = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", 
-"yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", 
-"their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", 
-"was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", 
-"and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", 
-"into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", 
-"over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", 
-"each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", 
-"very", "'", "s", "t", "can", "will", "just", "don", "should", "now", "cnn", "bbc", "-"]
-
-
-def compareStrings(str1, str2):
-    str1Words = str1.split(" ")
-    str2Words = str2.split(" ")
-    score = 0
-
-    for word in str1Words:
-        for word2 in str2Words:
-            if len(word) > min_word_length and len(word2) > min_word_length:
-                if (word in word2) or (word2 in word):
-                    score += 1
-    
-    return score
-
-
-url = "https://newsapi.org/v2/top-headlines?" 
-url += "sources=bbc-news,cnn,cbc-news,fox-news,the-washington-post,time,newsweek,abc,independent,msnbc"
-url += "&pageSize=100" 
-url += "&apiKey=72d48922d4644d03bcda247a8ba59479"
-
 
 def hello_pubsub(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
@@ -41,6 +10,36 @@ def hello_pubsub(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
+
+    min_word_length = 2
+    stop_words = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", 
+    "yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", 
+    "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", 
+    "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", 
+    "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", 
+    "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", 
+    "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", 
+    "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", 
+    "very", "'", "s", "t", "can", "will", "just", "don", "should", "now", "cnn", "bbc", "-"]
+
+    def compareStrings(str1, str2):
+        str1Words = str1.split(" ")
+        str2Words = str2.split(" ")
+        score = 0
+
+        for word in str1Words:
+            for word2 in str2Words:
+                if len(word) > min_word_length and len(word2) > min_word_length:
+                    if (word in word2) or (word2 in word):
+                        score += 1
+        
+        return score
+
+    url = "https://newsapi.org/v2/top-headlines?" 
+    url += "sources=bbc-news,cnn,cbc-news,fox-news,the-washington-post,time,newsweek,abc,independent,msnbc"
+    url += "&pageSize=100" 
+    url += "&apiKey=72d48922d4644d03bcda247a8ba59479"
+
     # pubsub_message = base64.b64decode(event['data']).decode('utf-8')
 
     # here I should access the newsAPI and get the top 10 articles from the list of ten sources
@@ -142,33 +141,37 @@ def hello_pubsub(event, context):
     # finally remove any empty list that would remain
     articleGroups = [x for x in articleGroups if x!=[]]
 
-    print(articleGroups)
+    # print(articleGroups)
     out = json.dumps(articleGroups)
-    print()
-    print(type(out))
+    # print()
+    # print(type(out))
 
-    try:
-        
-        db = firestore.Client()
-        collection_name = "articleGroups"
-        
-        # dic = {
-        #         "title": "test", 
-        #         "source": "test", 
-        #         "url": "test",
-        #         "description": "test",
-        #         "content": "test",
-        #         "date": "test"
-        #         }
+    if articleGroups!=[]:
+        try:
+            
+            db = firestore.Client()
+            collection_name = "articleGroups"
+            
+            # dic = {
+            #         "title": "test", 
+            #         "source": "test", 
+            #         "url": "test",
+            #         "description": "test",
+            #         "content": "test",
+            #         "date": "test"
+            #         }
 
-        db.collection(collection_name).document("group").get("list").add(out)
-        
-        print("success")
+            doc = db.collection('articleGroups').document('groups')
+            print(doc.get())
 
-    except Exception as e:
-        
-        print("error, somehthing was wrong with writting to the firesstore")
-        print(e)
+            doc.update({u'list': firestore.ArrayUnion([u''+out])})
+            
+            print("success")
+
+        except Exception as e:
+            
+            print("error, somehthing was wrong with writting to the firesstore")
+            print(e)
 
     # print(pubsub_message)
 

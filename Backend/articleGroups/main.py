@@ -34,26 +34,30 @@ def hello_world(request):
     try:
         collection_path = "articleGroups"
         db = firestore.Client()
-        doc = db.collection(collection_path).stream()
-        dic = []
-        print(doc)
+        # doc = db.collection(collection_path).stream()
+
+        doc_ref = db.collection(u'articleGroups').document(u'groups')
+
+        doc = doc_ref.get()
+
+        out = format(doc.to_dict())
         
-        for i in doc:
-            i = i.to_dict()
-            thisDic = {
-                "title": i["title"], 
-                "source": i["source"], 
-                "url": i["url"],
-                "description": i["description"],
-                "content": i["content"],
-                "date": i["date"]
-                }
-            dic.append(thisDic)
+        # for i in doc:
+        #     i = i.to_dict()
+        #     thisDic = {
+        #         "title": i["title"], 
+        #         "source": i["source"], 
+        #         "url": i["url"],
+        #         "description": i["description"],
+        #         "content": i["content"],
+        #         "date": i["date"]
+        #         }
+        #     dic.append(thisDic)
         
     except Exception as e:
         return(str(e), 500, headers)
 
-    return(json.dumps(dic), 200, headers)
+    return(out, 200, headers)
     
 # command to run to deploy :
 # gcloud functions deploy articleGroups --runtime python37 --trigger-http --allow-unauthenticated
