@@ -12,20 +12,16 @@
 
 var articles = []
 
-var stop_words = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", 
-"yourselves", "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", 
-"their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "these", "those", "am", "is", "are", 
-"was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", 
-"and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", 
-"into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", 
-"over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", 
-"each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", 
-"very", "'", "s", "t", "can", "will", "just", "don", "should", "now", "cnn", "bbc", "-"]
+var url = "https://us-central1-comparethenews.cloudfunctions.net/articleGroups"
 
-var url = "https://newsapi.org/v2/top-headlines?" 
-    + "sources=bbc-news,cnn,cbc-news,fox-news,the-washington-post,time,newsweek,abc,independent,msnbc" 
-    + "&pageSize=100" 
-    + "&apiKey=72d48922d4644d03bcda247a8ba59479";
+// var request = new XMLHttpRequest();
+// request.open('GET', url, true);
+
+// request.onload = function() {
+//     console.log(this.response)
+//     var data = JSON.parse(this.response);
+//   }
+// request.send();
 
 var request = new XMLHttpRequest()
 
@@ -38,220 +34,44 @@ fetch(url, {
     })
     .then((data) => {
         console.log(data)
-        articles = data.articles
-        compare_articles(articles)
+        display(data.list)
     });
 
-
-
-function compare_articles(data){
-
-    var sources = []
-    var contents = []
-    var indexes = []
-    var filteredContents = []
-
-    for (article in data){
-
-        var id = data[article].source.id
-        var content = data[article].title + " " + data[article].description + " " + data[article].content
-
-        if (sources.includes(id) == false){
-            sources.push(id)
-        }
-        if (contents.length != sources.length){
-            contents.push([])
-            indexes.push([])
-            filteredContents.push([])
-
-            contents[sources.indexOf(id)].push(content)
-            indexes[sources.indexOf(id)].push(article)
-        } else {
-            contents[sources.indexOf(id)].push(content)
-            indexes[sources.indexOf(id)].push(article)
-        }
-    }
-
-    // make a new list of contents with filters applyed
-    for (titleGroup in contents){
-        for (titleInd in contents[titleGroup]){
-            
-            // first make title lower case
-            var newTitle = contents[titleGroup][titleInd].toLowerCase()
-            // then remove stop words
-            newTitle = removeStopWords(newTitle)
-
-            filteredContents[titleGroup].push(newTitle)
-
-        }
-    }
-
-    console.log(filteredContents)
-
-    // now look at each combination of article and see if they are similar
-
-    var articlePairs = []
-    var dataPairs = []
-
-    for(var source=0 ; source<(sources.length-1) ; source+=1){
-        for (title in filteredContents){
-            var out = compareArticles(filteredContents[source][title], filteredContents.slice(source+1, sources.length))
-            if(out.length > 0){
-                var index = []
-                for(pair in out){
-                    // articlePairs.push(out[pair])
-                    // find the index of the second article
-                    for(group in filteredContents){
-                        console.log(filteredContents[group].indexOf(out[pair][1]))
-                        if(filteredContents[group].indexOf(out[pair][1]) != -1){
-                            index = [group, filteredContents[group].indexOf(out[pair][1])]
-                        }
-                    }
-                    dataPairs.push( [ data[indexes[source][title]], data[indexes[index[0]][index[1]]] ] )
-                }
-            }
-        }
-    }
-
-    console.log(dataPairs)
-
-    // now look through pairs, if they contain a common element join them
-
-    for(pair1 in dataPairs){
-        for(pair2 in dataPairs){
-            
-            if(pair1 != pair2){
-                // see if any element from the first pair is in the second pair
-                for(element in dataPairs[pair1]){
-                    if(dataPairs[pair2].includes(dataPairs[pair1][element])){
-                        // push all elements into that pair exept the common one
-                        for(element2 in dataPairs[pair1]){
-                            if(element != element2 && dataPairs[pair2].includes(dataPairs[pair1][element2])==false){
-                                dataPairs[pair2].push(dataPairs[pair1][element2])
-                            }
-                        }
-                        dataPairs.splice(pair1, 1)
-                        break
-                    }
-                }
-            }
-
-        }
-    }
-
-    console.log(dataPairs)
+function display(data){
 
     var newHtml = ""
-    // now populate ui
 
-    if(dataPairs.length == 0){
-        newHtml = "<p id='error'>Sorry, there are no similar articles in the news at the moment</p>"
-        console.log(document.getElementById("pairContainer").innerHTML) 
-        document.getElementById("pairContainer").innerHTML = newHtml
-        console.log(document.getElementById("pairContainer").innerHTML)
-    } else {
+    // this is each list of groups that have been compiled at each call of gatherData
+    for(i in data){
+        console.log(JSON.parse(data[i]))
+        var list = JSON.parse(data[i])
 
-        for(pair in dataPairs){
+        // this is each group in that list
+        for(o in list){
+            var group = list[o]
+
+            // now populate ui with 
+
             newHtml += "<div id='wrapper'>"
-            for(element in dataPairs[pair]){
-                newHtml += "<div id='wrapper2' onclick='window.open(\"" + dataPairs[pair][element].url + "\")'>" 
-                + "<img src='Assets/" + dataPairs[pair][element].source.id + ".png'></img>"
-                + "<h2>" + dataPairs[pair][element].title + "</h2>"
-                if(dataPairs[pair][element].content != null){
-                    newHtml += "<p>" + dataPairs[pair][element].content + "</p></div>"
+
+            // this is each article in the group
+            for(p in group){
+                newHtml += "<div id='wrapper2' onclick='window.open(\"" + group[p].url + "\")'>" 
+                + "<img src='Assets/" + group[p].source.id + ".png'></img>"
+                + "<h2>" + group[p].title + "</h2>"
+                if(group[p].content != null){
+                    newHtml += "<p>" + group[p].content + "</p></div>"
                 } else {
                     newHtml += "</div>"
                 }
             }
+
             newHtml += "</div>"
+
         }
 
-        document.getElementById("pairContainer").innerHTML = newHtml
     }
 
-    console.log(comparePhrases("canadians comfortable pace easing restrictions: poll | cbc newsas provinces start tiptoe toward normalcy gently lifting restrictions aimed slowing spread covid19, new poll suggests canadians largely happy pace. provinces start tiptoe toward normalcy gently lifting restrictions aimed slowing spread covid19, new poll suggests canadians largely happy pace. people provinces taking steps reopen 60 70 per ce… [+3299 chars]",
-"canada shifts un security council campaign pitch response pandemic | cbc newswith united nations poised announce whether vote nonpermanent security council seats go ahead scheduled june, canada doubling bid seat — adjusting pitch take covid19 crisis account. united nations poised announce whether vote nonpermanent security council seats go ahead scheduled june, canada doubling bid seat adjusting pitch take covid19 crisis account. prime mini… [+5243 chars]"))
+    document.getElementById("pairContainer").innerHTML = newHtml
 
-}
-
-
-// function just removes list of stop words from string passed in
-function removeStopWords(txt){
-    var expStr = stop_words.join("|");
-	return txt.replace(new RegExp('\\b(' + expStr + ')\\b', 'gi'), '')
-                    .replace(/\s{2,}/g, ' ');
-}
-
-
-// function compares an article with a stack of other articles, and returns a list of articles it is similar to
-function compareArticles(article, stack){
-
-    var pairs = []
-
-    // stop article from being null
-    article = ""+article
-
-    for (group in stack){
-        for (article2 in stack[group]){
-            // console.log(stack[group][article2])
-            var score = comparePhrases(article, stack[group][article2])
-            var minLen = Math.min(article.split(" ").length, stack[group][article2].split(" ").length)
-            console.log(minLen)
-
-            if(score > minLen){
-                console.log("these two articles are similar, with a score of " + score)
-                console.log(article)
-                console.log(stack[group][article2])
-                console.log()
-                pairs.push([article, stack[group][article2]])
-            }
-        }
-    }
-
-    return pairs
-
-}
-
-
-// returns similarity of two strings
-function comparePhrases(str1, str2){
-
-    str1 = ""+str1
-    str2 = ""+str2
-
-    score = 0
-
-    // split the phrases into lists containing words
-    strlists = [str1.split(" "), str2.split(" ")]
-    listLengs = [strlists[0].length, strlists[1].length]
-    // work out smallest and biggest list
-    minIndex = listLengs.indexOf(Math.min.apply(null, listLengs))
-    maxIndex = 1-minIndex
-
-    for(var i1=0 ; i1<strlists[minIndex].length ; i1+=1){
-        for(var i2=0 ; i2<strlists[maxIndex].length ; i2+=1){
-            // if a word is very similar/identical to another then add to similarity score
-            if(compareStr(strlists[minIndex][i1], strlists[maxIndex][i2])){
-                score += 1
-            }
-        }
-    }
-
-    return score
-
-}
-
-
-function compareStr(str1, str2){
-    // if both words are longer than 2 characters
-    // see if the words are identical, or one contains the other
-
-    if(str1.length > 2 && str2.length > 2){
-        if(str1.includes(str2) || str2.includes(str1)){
-            // console.log("comparing " + str1 + " and " + str2 + " returning True")
-            return true
-        }
-    } 
-    // console.log("comparing " + str1 + " and " + str2 + " returning False")
-    return false
 }

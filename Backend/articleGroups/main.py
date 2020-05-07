@@ -40,7 +40,7 @@ def hello_world(request):
 
         doc = doc_ref.get()
 
-        out = format(doc.to_dict())
+        out = doc.to_dict()
         
         # for i in doc:
         #     i = i.to_dict()
@@ -57,7 +57,7 @@ def hello_world(request):
     except Exception as e:
         return(str(e), 500, headers)
 
-    return(out, 200, headers)
+    return(json.dumps(out), 200, headers)
     
 # command to run to deploy :
 # gcloud functions deploy articleGroups --runtime python37 --trigger-http --allow-unauthenticated
