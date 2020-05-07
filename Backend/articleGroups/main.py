@@ -32,9 +32,8 @@ def hello_world(request):
     print("trying to acces firestore")
 
     try:
-        collection_path = "articleGroups"
+        
         db = firestore.Client()
-        # doc = db.collection(collection_path).stream()
 
         doc_ref = db.collection(u'articleGroups').document(u'groups')
 
@@ -42,17 +41,6 @@ def hello_world(request):
 
         out = doc.to_dict()
         
-        # for i in doc:
-        #     i = i.to_dict()
-        #     thisDic = {
-        #         "title": i["title"], 
-        #         "source": i["source"], 
-        #         "url": i["url"],
-        #         "description": i["description"],
-        #         "content": i["content"],
-        #         "date": i["date"]
-        #         }
-        #     dic.append(thisDic)
         
     except Exception as e:
         return(str(e), 500, headers)

@@ -100,13 +100,16 @@ def hello_pubsub(event, context):
 
                     score = compareStrings(content, content2)
                     minScore = min([len(content.split(" ")), len(content2.split(" "))])
+                    lenDif = abs(len(content.split(" ")) - len(content2.split(" ")))
                     
                     # print(content)
                     # print(content2)
                     # print()
 
-                    if score > minScore:
-                        # print("Found a pair, with score of " + str(score) + " and min score of " + str(minScore))
+                    #and (minScore>8 and lenDif<20)
+                    # I had this to check that two articles weren't very different lengths
+                    if score > minScore and minScore > 6:
+                        print("Found a pair, with score of " + str(score) + " and min score of " + str(minScore))
                         # print(content)
                         # print(content2)
                         # print()
@@ -121,16 +124,34 @@ def hello_pubsub(event, context):
     # articleGroups = [[{'source': {'id': 'fox-news', 'name': 'Fox News'}, 'author': 'Fox News', 'title': 'Georgia grand jury review recommended in fatal shooting of Ahmaud Arbery, Biden weighs in', 'description': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.', 'url': 'https://www.foxnews.com/us/georgia-grand-jury-review-recommended-in-fatal-shooting-of-ahmaud-arbery', 'urlToImage': 'https://static.foxnews.com/foxnews.com/content/uploads/2020/04/Police-Tape-Line-iStock.jpg', 'publishedAt': '2020-05-06T08:07:20.6409854Z', 'content': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.\r\nThe investigation into the fatal shooting of\xa0Ahmaud Arbery, 25, in February\xa0has been criticize… [+3178 chars]'}, {'source': {'id': 'bbc-news', 'name': 'BBC News'}, 'author': 'BBC News', 'title': "Biden demands justice for black jogger's killing", 'description': 'Ahmaud Arbery, a 25-year-old black man, was confronted by an ex-policeman and his son while jogging.', 'url': 'http://www.bbc.co.uk/news/world-us-canada-52557609', 'urlToImage': 'https://ichef.bbci.co.uk/news/1024/branded_news/4304/production/_112165171_061006061-1.jpg', 'publishedAt': '2020-05-06T10:28:18Z', 'content': 'Image copyrightReutersImage caption\r\n Joe Biden: "The video is clear: Ahmaud Arbery was killed in cold blood"\r\nThe Democrats\' likely presidential candidate Joe Biden has demanded justice over the killing of an unarmed black man in the US state of Georgia.\r\nMr… [+3728 chars]'}], [{'source': {'id': 'bbc-news', 'name': 'BBC News'}, 'author': 'BBC News', 'title': "Biden demands justice for black jogger's killing", 'description': 'Ahmaud Arbery, a 25-year-old black man, was confronted by an ex-policeman and his son while jogging.', 'url': 'http://www.bbc.co.uk/news/world-us-canada-52557609', 'urlToImage': 'https://ichef.bbci.co.uk/news/1024/branded_news/4304/production/_112165171_061006061-1.jpg', 'publishedAt': '2020-05-06T10:28:18Z', 'content': 'Image copyrightReutersImage caption\r\n Joe Biden: "The video is clear: Ahmaud Arbery was killed in cold blood"\r\nThe Democrats\' likely presidential candidate Joe Biden has demanded justice over the killing of an unarmed black man in the US state of Georgia.\r\nMr… [+3728 chars]'}, {'source': {'id': 'fox-news', 'name': 'Fox News'}, 'author': 'Fox News', 'title': 'Georgia grand jury review recommended in fatal shooting of Ahmaud Arbery, Biden weighs in', 'description': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.', 'url': 'https://www.foxnews.com/us/georgia-grand-jury-review-recommended-in-fatal-shooting-of-ahmaud-arbery', 'urlToImage': 'https://static.foxnews.com/foxnews.com/content/uploads/2020/04/Police-Tape-Line-iStock.jpg', 'publishedAt': '2020-05-06T08:07:20.6409854Z', 'content': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.\r\nThe investigation into the fatal shooting of\xa0Ahmaud Arbery, 25, in February\xa0has been criticize… [+3178 chars]'}]]
 
 
-    # Finally join pairs that have common elements
+    # Here join groups in database with those in articleGroups
+    try:
+        db = firestore.Client()
+        doc_ref = db.collection(u'articleGroups').document(u'groups')
+
+        doc = doc_ref.get()
+        dic = doc.to_dict()
+
+        storedGroups = dic['groupArr']
+
+        for groupStr in storedGroups:
+            group = json.loads(groupStr)
+            articleGroups.append(group)
+        
+    except Exception as e:
+        print("error with accessing the database groups")
+
+        
+    # Join pairs that have common elements, should also add current groups that are in the database
     for group1 in range(0, len(articleGroups)):
         for group2 in range(0, len(articleGroups)):
-            print("comparing group " + str(group1) + " and group " + str(group2))
+            # print("comparing group " + str(group1) + " and group " + str(group2))
             # don't join the same group with itself
             if group1 != group2:
                 # if they have a common element, join
                 for element in articleGroups[group1]:
                     if element in articleGroups[group2]:
-                        print("found common element")
+                        # print("found common element")
                         # copy all elements from group1 that aren't in group2 and delete group1
                         for elementCopy in articleGroups[group1]:
                             if (elementCopy in articleGroups[group2])==False:
@@ -142,29 +163,40 @@ def hello_pubsub(event, context):
     articleGroups = [x for x in articleGroups if x!=[]]
 
     # print(articleGroups)
-    out = json.dumps(articleGroups)
+    # out = json.dumps(articleGroups)
     # print()
     # print(type(out))
+
+    print(articleGroups)
 
     if articleGroups!=[]:
         try:
             
             db = firestore.Client()
-            collection_name = "articleGroups"
+
+            doc_ref = db.collection('articleGroups').document('groups')
+            doc = doc_ref.get()
+            dic = doc.to_dict()
+
+            groups = dic['groupArr']
+
+            # dic['stringGroups'] = out
+
+            # remove any element from the new list that is already in the database
+            for groupInDatab in groups:
+                group = json.loads(groupInDatab)
+                if(group in articleGroups):
+                    articleGroups.remove(group)
             
-            # dic = {
-            #         "title": "test", 
-            #         "source": "test", 
-            #         "url": "test",
-            #         "description": "test",
-            #         "content": "test",
-            #         "date": "test"
-            #         }
+            # now add all new elements to the database
+            for group in articleGroups:
+                groups.append(json.dumps(group))
 
-            doc = db.collection('articleGroups').document('groups')
-            print(doc.get())
+            dic['groupArr'] = groups
 
-            doc.update({u'list': firestore.ArrayUnion([u''+out])})
+            doc_ref.set(dic)
+
+            # doc.update({u'list': firestore.ArrayUnion([u''+out])})
             
             print("success")
 

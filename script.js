@@ -34,41 +34,42 @@ fetch(url, {
     })
     .then((data) => {
         console.log(data)
-        display(data.list)
+        display(data.groupArr)
     });
 
 function display(data){
 
     var newHtml = ""
 
-    // this is each list of groups that have been compiled at each call of gatherData
+    console.log(data)
+
+    if(data.length == 0){
+        console.log("no content")
+        newHtml = "<p style='text-align: center;'>There is no content in the database</p>"
+    }
+
+    // this is each group of similar articles
     for(i in data){
-        console.log(JSON.parse(data[i]))
-        var list = JSON.parse(data[i])
+        var group = JSON.parse(data[i])
 
-        // this is each group in that list
-        for(o in list){
-            var group = list[o]
+        // now populate ui with 
 
-            // now populate ui with 
+        newHtml += "<div id='wrapper'>"
 
-            newHtml += "<div id='wrapper'>"
-
-            // this is each article in the group
-            for(p in group){
-                newHtml += "<div id='wrapper2' onclick='window.open(\"" + group[p].url + "\")'>" 
-                + "<img src='Assets/" + group[p].source.id + ".png'></img>"
-                + "<h2>" + group[p].title + "</h2>"
-                if(group[p].content != null){
-                    newHtml += "<p>" + group[p].content + "</p></div>"
-                } else {
-                    newHtml += "</div>"
-                }
+        // this is each article in the group
+        for(p in group){
+            newHtml += "<div id='wrapper2' onclick='window.open(\"" + group[p].url + "\")'>" 
+            + "<img src='Assets/" + group[p].source.id + ".png'></img>"
+            + "<h2>" + group[p].title + "</h2>"
+            if(group[p].content != null){
+                newHtml += "<p>" + group[p].content + "</p></div>"
+            } else {
+                newHtml += "</div>"
             }
-
-            newHtml += "</div>"
-
         }
+
+        newHtml += "</div>"
+
 
     }
 
