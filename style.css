@@ -30,6 +30,7 @@ p{
     /* justify-content: center; */
     /* align-items: center; */
     border-left: 2px solid black;
+    overflow-x: scroll;
     border-radius: 1px;
     padding-left: 20px;
     padding-top: 5px;
@@ -45,11 +46,12 @@ p{
     padding-top: 5px;
     padding-bottom: 10px;
     margin-left: 10px;
-    margin-right: 10px;
+    margin-right: 0px;
     -webkit-box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff;
     box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff;
     border-radius: 10px;
     width: 45%;
+    min-width: 300px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
 }
