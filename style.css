@@ -12,7 +12,7 @@ body{
     padding-bottom: 30px;
     padding-left: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: white;
+    background-color: rgb(240, 253, 253);
     transition: 0.4s;
     z-index: 99;
     box-shadow: 0px 5px 5px rgba(190, 190, 190, 0.5);
