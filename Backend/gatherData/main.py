@@ -136,11 +136,13 @@ def hello_pubsub(event, context):
 
         for groupStr in storedGroups:
             group = json.loads(groupStr)
+            print(group)
             articleGroups.append(group)
         
     except Exception as e:
         print("error with accessing the database groups")
 
+    # print(articleGroups)
         
     # Join pairs that have common elements, should also add current groups that are in the database
     for group1 in range(0, len(articleGroups)):
@@ -151,12 +153,14 @@ def hello_pubsub(event, context):
                 # if they have a common element, join
                 for element in articleGroups[group1]:
                     if element in articleGroups[group2]:
-                        # print("found common element")
+                        print("found common element")
                         # copy all elements from group1 that aren't in group2 and delete group1
                         for elementCopy in articleGroups[group1]:
                             if (elementCopy in articleGroups[group2])==False:
                                 articleGroups[group2].append(elementCopy)
+                        # print(articleGroups[group1])
                         articleGroups[group1] = []
+                        # print(articleGroups[group1])
                         break
 
     # finally remove any empty list that would remain
@@ -167,7 +171,7 @@ def hello_pubsub(event, context):
     # print()
     # print(type(out))
 
-    print(articleGroups)
+    # print(articleGroups)
 
     if articleGroups!=[]:
         try:
@@ -183,12 +187,13 @@ def hello_pubsub(event, context):
             # dic['stringGroups'] = out
 
             # remove any element from the new list that is already in the database
-            for groupInDatab in groups:
-                group = json.loads(groupInDatab)
-                if(group in articleGroups):
-                    articleGroups.remove(group)
+            # for groupInDatab in groups:
+            #     group = json.loads(groupInDatab)
+            #     if(group in articleGroups):
+            #         articleGroups.remove(group)
             
             # now add all new elements to the database
+            groups = []
             for group in articleGroups:
                 groups.append(json.dumps(group))
 
