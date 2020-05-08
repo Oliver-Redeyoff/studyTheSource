@@ -7,10 +7,26 @@
     </head>
 
     <body>
-        <h1>Compare the news</h1>
-        <h2>Similar headlines</h2>
-        <div id="pairContainer">
+        <div id="header">
+            <h1>Compare the news</h1>
         </div>
 
+        <div id="pairContainer">
+            <p id="loadingText">Loading articles <img id="loadingImg" src="Assets/loading.gif"></img></p>
+        </div>
+
+        <script>
+            // When the user scrolls down 80px from the top of the document, resize the navbar's padding and the logo's font size
+            window.onscroll = function() {scrollFunction()};
+            
+            function scrollFunction() {
+              if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
+                document.getElementById("header").style.padding = "0px 10px 0px 10px";
+              } else {
+                document.getElementById("header").style.padding = "30px 10px 30px 10px";
+              }
+            }
+            </script>
+
     </body>
-<html>
+</html>

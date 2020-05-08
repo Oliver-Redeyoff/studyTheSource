@@ -1,16 +1,33 @@
-h1{ 
+body{
+    padding: 0px;
+    margin: 0px;
+}
+
+#header{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: 0.4s;
+    z-index: 99;
+    box-shadow: 0px 5px 5px rgba(190, 190, 190, 0.5);
+}
+h1{
+    display: inline-block;
+    margin-left: 50%;
+    transform: translateX(-50%);
     font-family: Arial, Helvetica, sans-serif;
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-top: 50px;
-    border-bottom: 1px solid black;
-    padding-bottom: 20px;
 }
 h2{ 
     font-family: Arial, Helvetica, sans-serif;
     margin-left: 40px;
-    margin-right: 20px;
     margin-top: 50px;
+    margin-right: 20px;
     margin-bottom: 50px;
 }
 p{
@@ -20,7 +37,7 @@ p{
 #pairContainer {
     margin-left: 20px;
     margin-right: 20px;
-    margin-top: 30px;
+    margin-top: 180px;
     margin-bottom: 100px;
     /* border: 1px solid red; */
 }
@@ -44,7 +61,7 @@ p{
     background-color: rgb(253, 253, 253);
     padding: 20px;
     padding-top: 5px;
-    padding-bottom: 10px;
+    padding-bottom: 20px;
     margin-left: 10px;
     margin-right: 0px;
     -webkit-box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff;
@@ -82,7 +99,7 @@ p{
 }
 
 
-#pairContainer img {
+#pairContainer #logoIcon {
     position: relative;
     margin-right: 20px;
     height: 30px;
@@ -101,3 +118,14 @@ p{
     font-size: 16px;
     padding: 5px;
 } 
+
+#loadingText{
+    text-align: center;
+}
+#loadingImg{
+    height: 50px;
+    display: block;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -59,7 +59,7 @@ function display(data){
         // this is each article in the group
         for(p in group){
             newHtml += "<div id='wrapper2' onclick='window.open(\"" + group[p].url + "\")'>" 
-            + "<img src='Assets/" + group[p].source.id + ".png'></img>"
+            + "<img id='logoIcon' src='Assets/" + group[p].source.id + ".png'></img>"
             + "<h2>" + group[p].title + "</h2>"
             if(group[p].content != null){
                 newHtml += "<p>" + group[p].content + "</p></div>"
