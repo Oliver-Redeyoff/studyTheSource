@@ -54,18 +54,40 @@ function display(data){
 
         // now populate ui with 
 
-        newHtml += "<div id='wrapper'>"
+        newHtml += "<h3 id='articleCount'>" + group.length + " similar articles</h3>"
 
-        // this is each article in the group
+        newHtml += "<div id='articleGroup'>"
+
+        // this is each article in the group .urlToImage
         for(p in group){
-            newHtml += "<div id='wrapper2' onclick='window.open(\"" + group[p].url + "\")'>" 
-            + "<img id='logoIcon' src='Assets/" + group[p].source.id + ".png'></img>"
-            + "<h2>" + group[p].title + "</h2>"
+            newHtml += '<div id="article" onclick="window.open(\'' + group[p].url + '\')">'
+            newHtml += `
+            <div id="title" style=\'background-image: url("` + group[p].urlToImage + `")\'>
+                <div id="TopHalf">
+                    <img src="Assets/` + group[p].source.id + `.png"></img>
+                </div>
+                <div id="BottomHalf">
+                    <h2>` + group[p].title + `</h2>
+                </div>
+            </div>
+            `
+
             if(group[p].content != null){
-                newHtml += "<p>" + group[p].content + "</p></div>"
+                newHtml += `
+                <div id="content">
+                    <p>` + group[p].content + `</p>
+                </div>
+                `
             } else {
-                newHtml += "</div>"
+                newHtml += `
+                <div id="content">
+                    <p>Click to view the article</p>
+                </div>
+                `
             }
+            
+            newHtml += "</div>"
+
         }
 
         newHtml += "</div>"
@@ -73,6 +95,6 @@ function display(data){
 
     }
 
-    document.getElementById("pairContainer").innerHTML = newHtml
+    document.getElementById("bodyContainer").innerHTML = newHtml
 
 }

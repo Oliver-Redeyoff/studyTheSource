@@ -3,16 +3,35 @@
         <meta charset = "utf-8" />
         <title>CompareTheNews</title>
         <link rel="stylesheet" type="text/css" href="style.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">  
         <script src="script.js"></script>
     </head>
 
     <body>
         <div id="header">
-            <h1>Compare the news</h1>
+            <h1>All<br> the<br> news</h1>
+            <form onsubmit="event.preventDefault(); searchLocation()" action="#">
+                <input type="text" id="searchBar" name="search" placeholder="Search story">
+            </form>
         </div>
 
-        <div id="pairContainer">
-            <p id="loadingText">Loading articles <img id="loadingImg" src="Assets/loading.gif"></img></p>
+        <!-- <div id="article2" style='background-image: url("https://d.newsweek.com/en/full/1588658/katie-hill.jpg")'>
+            <div id="title">
+                <div id="TopHalf">
+                    <img src="Assets/bbc-news.png"></img>
+                </div>
+                <div id="BottomHalf">
+                    <h2>This is the title of the article</h2>
+                </div>
+            </div>
+            <div id="content">
+                <p>This is the content of the article, it is thought that this will be longer that the title
+                    so I am just putting some random content in here, the secret to the meaning of life is th... [+10chars]</p>
+            </div>
+        </div> -->
+
+        <div id="bodyContainer">
+            <h3 id="loadingText">Loading articles <img id="loadingImg" src="Assets/loading.gif"></img></h3>
         </div>
 
         <script>
@@ -21,9 +40,9 @@
             
             function scrollFunction() {
               if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
-                document.getElementById("header").style.padding = "0px 10px 0px 10px";
+                document.getElementById("header").style.padding = "10px 10px 10px 10px";
               } else {
-                document.getElementById("header").style.padding = "30px 10px 30px 10px";
+                document.getElementById("header").style.padding = "20px 10px 20px 10px";
               }
             }
             </script>
