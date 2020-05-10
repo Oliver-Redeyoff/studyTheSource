@@ -135,6 +135,9 @@ body{
     }
 }
 @media screen and (max-width: 1000px){
+    #header #searchBar {
+        width: 200px;
+    }
     #bodyContainer #articleGroup {
         display: block;
         justify-content: center;
