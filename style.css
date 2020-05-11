@@ -74,23 +74,6 @@ body{
     margin-top: 140px;
     margin-bottom: 100px;
 }
-#bodyContainer #articleGroup {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: space-around;
-
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 30px;
-    padding-bottom: 20px;
-    margin-bottom: 50px;
-    margin-left: 0px;
-    margin-right: 0px;
-
-    /* background-color: rgba(100, 0, 0, 0.1); */
-    background-color: rgba(220, 220, 220, 0.5);
-}
 #bodyContainer #articleCount {
     display: inline-block;
     font-family: Arial, Helvetica, sans-serif;
@@ -102,11 +85,31 @@ body{
     margin-right: 10%;
     margin-left: 10%;
     color: white;
+    z-index: 10;
     transition: padding 0.3s;
+    cursor: pointer;
 }
 #bodyContainer #articleCount:hover{
     padding-top: 13px;
     padding-bottom: 13px;
+}
+#bodyContainer .articleGroup {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-around;
+
+    max-height: 3000px;
+    overflow: hidden;
+    padding: 30px 20px 20px 20px;
+    margin-bottom: 50px;
+    margin-left: 0px;
+    margin-right: 0px;
+    z-index: 9;
+
+    transition: max-height 0.4s, padding 0.4s;
+    /* transition: padding 0.4s; */
+    background-color: rgba(220, 220, 220, 0.5);
 }
 
 
@@ -118,6 +121,7 @@ body{
     margin-right: 10px;
     background-color: rgba(0,0,0,0.9);
     cursor: pointer;
+    z-index: 9;
     /* -webkit-box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff;
     box-shadow:  15px 15px 27px #e1e1e3, -15px -15px 27px #ffffff; */
     transition: transform 0.3s;
@@ -126,7 +130,7 @@ body{
     transform: scale(1.03)
 }
 @media screen and (max-width: 1800px){
-    #bodyContainer #articleGroup {
+    #bodyContainer .articleGroup {
         justify-content: flex-start;
         align-content: space-around;
     }
@@ -138,12 +142,9 @@ body{
     #header #searchBar {
         width: 200px;
     }
-    #bodyContainer #articleGroup {
+    #bodyContainer .articleGroup {
         display: block;
         justify-content: center;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        margin-bottom: 100px;
     }
     #bodyContainer #article {
         display: block;

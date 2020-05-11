@@ -54,9 +54,9 @@ function display(data){
 
         // now populate ui with 
 
-        newHtml += "<h3 id='articleCount'>" + group.length + " similar articles</h3>"
+        newHtml += "<h3 id='articleCount' onclick='minimise(" + i + ")'>" + group.length + " similar articles</h3>"
 
-        newHtml += "<div id='articleGroup'>"
+        newHtml += "<div class='articleGroup'>"
 
         // this is each article in the group .urlToImage
         for(p in group){
@@ -97,4 +97,16 @@ function display(data){
 
     document.getElementById("bodyContainer").innerHTML = newHtml
 
+}
+
+function minimise(index){
+    groups = document.getElementsByClassName("articleGroup")
+    console.log(groups[index].style.height)
+    if(groups[index].style.maxHeight != "0px"){
+        groups[index].style.maxHeight = "0px"
+        groups[index].style.padding = "0px 20px 0px 20px"
+    } else {
+        groups[index].style.maxHeight = "3000px"
+        groups[index].style.padding = "30px 20px 20px 20px"
+    }
 }
