@@ -99,7 +99,6 @@ body{
     justify-content: center;
     align-content: space-around;
 
-    max-height: 3000px;
     overflow: hidden;
     padding: 30px 20px 20px 20px;
     margin-bottom: 50px;
@@ -107,7 +106,7 @@ body{
     margin-right: 0px;
     z-index: 9;
 
-    transition: max-height 0.4s, padding 0.4s;
+    /* transition: max-height 0.4s, padding 0.4s; */
     /* transition: padding 0.4s; */
     background-color: rgba(220, 220, 220, 0.5);
 }

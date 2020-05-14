@@ -102,11 +102,11 @@ function display(data){
 function minimise(index){
     groups = document.getElementsByClassName("articleGroup")
     console.log(groups[index].style.height)
-    if(groups[index].style.maxHeight != "0px"){
-        groups[index].style.maxHeight = "0px"
+    if(groups[index].style.height != "0px"){
+        groups[index].style.height = "0px"
         groups[index].style.padding = "0px 20px 0px 20px"
     } else {
-        groups[index].style.maxHeight = "3000px"
+        groups[index].style.height = "auto"
         groups[index].style.padding = "30px 20px 20px 20px"
     }
 }

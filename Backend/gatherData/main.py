@@ -197,6 +197,11 @@ def hello_pubsub(event, context):
             for group in articleGroups:
                 groups.append(json.dumps(group))
 
+            # if the list contains more than 20 articles then drop the old articles
+            # at the end of the list
+            if(len(groups) > 20):
+                groups = groups[0:19]
+
             dic['groupArr'] = groups
 
             doc_ref.set(dic)
