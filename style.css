@@ -24,9 +24,9 @@ body{
 
 #header h1{
     position: absolute;
-    height: 80px;
-    width: 80px;
-    padding: 10px;
+    height: auto;
+    width: auto;
+    padding: 10px 10px 13px 10px;
     line-height: 25px;
     border: 2px solid white;
     float: left;
