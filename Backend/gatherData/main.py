@@ -50,7 +50,6 @@ def hello_pubsub(event, context):
     print("getting data")
     response = requests.get(url)
     print("got data")
-    print()
     data = response.json()
 
     articleGroups = []
@@ -61,6 +60,7 @@ def hello_pubsub(event, context):
     filteredContent = []
 
 
+    print("start of sorting article by source")
     # 2 - sort articles by their source and populate filteredContent
     for article in data['articles']:
         id = article['source']['id']
@@ -72,8 +72,10 @@ def hello_pubsub(event, context):
             sources.append(id)
             sourceGroups.append([article])
             filteredContent.append([temp])
+    print("end of sorting article by source")
 
 
+    print("start of cleaning data")
     # 3 - iterate through filteredContent and remove stop words and clean data
     groupCounter = -1
     for group in filteredContent:
@@ -86,8 +88,10 @@ def hello_pubsub(event, context):
             wordList  = [word for word in wordList if word.lower() not in stop_words]
 
             filteredContent[groupCounter][index] = " ".join(wordList)
+    print("end of cleaning data")
 
 
+    print("start of comparing articles")
     # 4 - compare articles with different sources to get pairs of similar articles
     for group1 in range(0, len(filteredContent)-1):
         # print("looking at the following list\n" + str(filteredContent[group1]))
@@ -117,8 +121,10 @@ def hello_pubsub(event, context):
                             sourceGroups[group1][filteredContent[group1].index(content)],
                             sourceGroups[group2][filteredContent[group2].index(content2)]
                         ])
+    print("end of comparing articles")
 
 
+    print("start of joining database groups with articleGroups")
     # 6 - join groups in database with those in articleGroups
     try:
         db = firestore.Client()
@@ -136,10 +142,12 @@ def hello_pubsub(event, context):
         
     except Exception as e:
         print("error with accessing the database groups")
+    print("end of joining database groups with articleGroups")
 
-        
+    
+    print("start of joining groups")
     # 7 - join groups that have common elements in articleGroups
-    # new version checks if source id and title are same instead of hole json
+    # new version checks if source id and title are same instead of whole json
     for group1 in range(0, len(articleGroups)):
         for group2 in range(0, len(articleGroups)):
             
@@ -161,8 +169,7 @@ def hello_pubsub(event, context):
 
                             articleGroups[group1] = []
                             break
-
-    # old version
+    # old version checks whole json which would lead to duplications
     # for group1 in range(0, len(articleGroups)):
     #     for group2 in range(0, len(articleGroups)):
     #         # print("comparing group " + str(group1) + " and group " + str(group2))
@@ -183,28 +190,42 @@ def hello_pubsub(event, context):
 
     # remove any empty list that would remain
     articleGroups = [x for x in articleGroups if x!=[]]
+    print("end of joining groups")
 
-    
+
+    print("start of sentiment analysis")
     # 8 - now that we know which articles we want, let's get the full content by scrapping the given url
-    # for group in articleGroups:
-    #     for article in group:
-    #         url = article['url']
-            
-    #         URL = 'https://www.foxnews.com/politics/pelosi-tries-to-rally-support-for-3t-coronavirus-relief-bill-in-face-of-veto-threat-gop-ridicule'
-    #         page = requests.get(URL)
+    # then we perform a sentiment analysis using textBlob to get polarity and subjectivity if this hasn't been calculated already
+    sentimentsCount = 0
+    for group in articleGroups:
+        for article in group:
+            # if the sentiment of the article has not alerady been calculated, do that
+            if "sentiment" not in article.keys():
+                url = article['url']
+                page = requests.get(url)
+                print("got page")
+                content = ""
 
-    #         content = ""
-    #         soup = BeautifulSoup(page.content, 'html.parser')
-    #         parts = soup.find_all("p")
-    #         for part in parts:
-    #             content += part.text
-            
+                soup = BeautifulSoup(page.content, 'html.parser')
+                parts = soup.find_all("p")
+                for part in parts:
+                    content += part.text
+                print("got full content")
 
-    # 9 - this is the new sentiment analysis part
-    # should iterate through each new article and calculate polarity and subjectivity
-    
+                blob = TextBlob(content)
+                article["sentiment"] = [blob.sentiment.polarity, blob.sentiment.subjectivity]
+                print("got sentiment")
+                print("finished one article")
+                sentimentsCount += 1
+                break
 
+        # this defines how many sentiment analysises to perform per call of the function since it takes much time    
+        if sentimentsCount == 1:
+            break
 
+    print("end of sentiment analysis")
+
+    # 9 - update database with new article groups
     if articleGroups!=[]:
         try:
             
