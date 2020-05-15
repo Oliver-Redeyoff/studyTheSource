@@ -34,6 +34,8 @@ fetch(url, {
     })
     .then((data) => {
         console.log(data)
+        // to quick for this
+        //document.getElementById("loadingText").innerHtml = 'Displaying articles <img id="loadingImg" src="Assets/loading.gif"></img>'
         display(data.groupArr)
     });
 

@@ -2,6 +2,9 @@ from google.cloud import firestore
 import json
 import requests
 import base64
+from textblob import TextBlob
+from bs4 import BeautifulSoup
+import re
 
 
 def hello_pubsub(event, context):
@@ -41,8 +44,9 @@ def hello_pubsub(event, context):
     url += "&apiKey=72d48922d4644d03bcda247a8ba59479"
 
     # pubsub_message = base64.b64decode(event['data']).decode('utf-8')
+    
 
-    # here I should access the newsAPI and get the top 10 articles from the list of ten sources
+    # 1 - here I should access the newsAPI and get the top 10 articles from the list of ten sources
     print("getting data")
     response = requests.get(url)
     print("got data")
@@ -56,7 +60,8 @@ def hello_pubsub(event, context):
     sourceGroups = []
     filteredContent = []
 
-    # first sort articles by there source and populate filteredContent with initial content
+
+    # 2 - sort articles by their source and populate filteredContent
     for article in data['articles']:
         id = article['source']['id']
         temp = (str(article['title']) + " " + str(article['description']) + " " + str(article['content'])).lower()
@@ -68,13 +73,8 @@ def hello_pubsub(event, context):
             sourceGroups.append([article])
             filteredContent.append([temp])
 
-    # print(filteredContent[0])
 
-    # for debugging to limit amount of data processed
-    # filteredContent = filteredContent[0:2]
-
-
-    # now iterate through filteredContent and remove stop words to clean data
+    # 3 - iterate through filteredContent and remove stop words and clean data
     groupCounter = -1
     for group in filteredContent:
         groupCounter += 1
@@ -88,8 +88,7 @@ def hello_pubsub(event, context):
             filteredContent[groupCounter][index] = " ".join(wordList)
 
 
-    # now compare articles to get pairs of similar articles
-
+    # 4 - compare articles with different sources to get pairs of similar articles
     for group1 in range(0, len(filteredContent)-1):
         # print("looking at the following list\n" + str(filteredContent[group1]))
         for content in filteredContent[group1]:
@@ -108,7 +107,7 @@ def hello_pubsub(event, context):
 
                     #and (minScore>8 and lenDif<20)
                     # I had this to check that two articles weren't very different lengths
-                    if score > minScore and minScore > 6:
+                    if score > minScore and minScore > 8:
                         print("Found a pair, with score of " + str(score) + " and min score of " + str(minScore))
                         # print(content)
                         # print(content2)
@@ -120,11 +119,7 @@ def hello_pubsub(event, context):
                         ])
 
 
-    # for debugging merging section
-    # articleGroups = [[{'source': {'id': 'fox-news', 'name': 'Fox News'}, 'author': 'Fox News', 'title': 'Georgia grand jury review recommended in fatal shooting of Ahmaud Arbery, Biden weighs in', 'description': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.', 'url': 'https://www.foxnews.com/us/georgia-grand-jury-review-recommended-in-fatal-shooting-of-ahmaud-arbery', 'urlToImage': 'https://static.foxnews.com/foxnews.com/content/uploads/2020/04/Police-Tape-Line-iStock.jpg', 'publishedAt': '2020-05-06T08:07:20.6409854Z', 'content': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.\r\nThe investigation into the fatal shooting of\xa0Ahmaud Arbery, 25, in February\xa0has been criticize… [+3178 chars]'}, {'source': {'id': 'bbc-news', 'name': 'BBC News'}, 'author': 'BBC News', 'title': "Biden demands justice for black jogger's killing", 'description': 'Ahmaud Arbery, a 25-year-old black man, was confronted by an ex-policeman and his son while jogging.', 'url': 'http://www.bbc.co.uk/news/world-us-canada-52557609', 'urlToImage': 'https://ichef.bbci.co.uk/news/1024/branded_news/4304/production/_112165171_061006061-1.jpg', 'publishedAt': '2020-05-06T10:28:18Z', 'content': 'Image copyrightReutersImage caption\r\n Joe Biden: "The video is clear: Ahmaud Arbery was killed in cold blood"\r\nThe Democrats\' likely presidential candidate Joe Biden has demanded justice over the killing of an unarmed black man in the US state of Georgia.\r\nMr… [+3728 chars]'}], [{'source': {'id': 'bbc-news', 'name': 'BBC News'}, 'author': 'BBC News', 'title': "Biden demands justice for black jogger's killing", 'description': 'Ahmaud Arbery, a 25-year-old black man, was confronted by an ex-policeman and his son while jogging.', 'url': 'http://www.bbc.co.uk/news/world-us-canada-52557609', 'urlToImage': 'https://ichef.bbci.co.uk/news/1024/branded_news/4304/production/_112165171_061006061-1.jpg', 'publishedAt': '2020-05-06T10:28:18Z', 'content': 'Image copyrightReutersImage caption\r\n Joe Biden: "The video is clear: Ahmaud Arbery was killed in cold blood"\r\nThe Democrats\' likely presidential candidate Joe Biden has demanded justice over the killing of an unarmed black man in the US state of Georgia.\r\nMr… [+3728 chars]'}, {'source': {'id': 'fox-news', 'name': 'Fox News'}, 'author': 'Fox News', 'title': 'Georgia grand jury review recommended in fatal shooting of Ahmaud Arbery, Biden weighs in', 'description': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.', 'url': 'https://www.foxnews.com/us/georgia-grand-jury-review-recommended-in-fatal-shooting-of-ahmaud-arbery', 'urlToImage': 'https://static.foxnews.com/foxnews.com/content/uploads/2020/04/Police-Tape-Line-iStock.jpg', 'publishedAt': '2020-05-06T08:07:20.6409854Z', 'content': 'A Georgia\xa0prosecutor on Tuesday recommended that a grand jury review\xa0the fatal shooting of a black man who friends say was out for a jog at the time he was killed.\r\nThe investigation into the fatal shooting of\xa0Ahmaud Arbery, 25, in February\xa0has been criticize… [+3178 chars]'}]]
-
-
-    # Here join groups in database with those in articleGroups
+    # 6 - join groups in database with those in articleGroups
     try:
         db = firestore.Client()
         doc_ref = db.collection(u'articleGroups').document(u'groups')
@@ -136,42 +131,79 @@ def hello_pubsub(event, context):
 
         for groupStr in storedGroups:
             group = json.loads(groupStr)
-            print(group)
+            # print(group)
             articleGroups.append(group)
         
     except Exception as e:
         print("error with accessing the database groups")
 
-    # print(articleGroups)
         
-    # Join pairs that have common elements, should also add current groups that are in the database
+    # 7 - join groups that have common elements in articleGroups
+    # new version checks if source id and title are same instead of hole json
     for group1 in range(0, len(articleGroups)):
         for group2 in range(0, len(articleGroups)):
-            # print("comparing group " + str(group1) + " and group " + str(group2))
+            
             # don't join the same group with itself
             if group1 != group2:
-                # if they have a common element, join
-                for element in articleGroups[group1]:
-                    if element in articleGroups[group2]:
-                        print("found common element")
-                        # copy all elements from group1 that aren't in group2 and delete group1
-                        for elementCopy in articleGroups[group1]:
-                            if (elementCopy in articleGroups[group2])==False:
-                                articleGroups[group2].append(elementCopy)
-                        # print(articleGroups[group1])
-                        articleGroups[group1] = []
-                        # print(articleGroups[group1])
-                        break
 
-    # finally remove any empty list that would remain
+                # compare each article from group1 to each one from group2
+                for article1 in articleGroups[group1]:
+                    for article2 in articleGroups[group2]:
+
+                        # if they have a common source id and title, join
+                        if (article1['source']['id']==article2['source']['id'] and article1['title']==article2['title']):
+
+                            print("found common element")
+                            # copy all elements from group1 that aren't in group2 and delete group1
+                            for elementCopy in articleGroups[group1]:
+                                if (elementCopy['source']['id']==article2['source']['id'] and elementCopy['title']==article2['title'])==False:
+                                    articleGroups[group2].append(elementCopy)
+
+                            articleGroups[group1] = []
+                            break
+
+    # old version
+    # for group1 in range(0, len(articleGroups)):
+    #     for group2 in range(0, len(articleGroups)):
+    #         # print("comparing group " + str(group1) + " and group " + str(group2))
+    #         # don't join the same group with itself
+    #         if group1 != group2:
+    #             # if they have a common element, join
+    #             for element in articleGroups[group1]:
+    #                 if element in articleGroups[group2]:
+    #                     print("found common element")
+    #                     # copy all elements from group1 that aren't in group2 and delete group1
+    #                     for elementCopy in articleGroups[group1]:
+    #                         if (elementCopy in articleGroups[group2])==False:
+    #                             articleGroups[group2].append(elementCopy)
+    #                     # print(articleGroups[group1])
+    #                     articleGroups[group1] = []
+    #                     # print(articleGroups[group1])
+    #                     break
+
+    # remove any empty list that would remain
     articleGroups = [x for x in articleGroups if x!=[]]
 
-    # print(articleGroups)
-    # out = json.dumps(articleGroups)
-    # print()
-    # print(type(out))
+    
+    # 8 - now that we know which articles we want, let's get the full content by scrapping the given url
+    # for group in articleGroups:
+    #     for article in group:
+    #         url = article['url']
+            
+    #         URL = 'https://www.foxnews.com/politics/pelosi-tries-to-rally-support-for-3t-coronavirus-relief-bill-in-face-of-veto-threat-gop-ridicule'
+    #         page = requests.get(URL)
 
-    # print(articleGroups)
+    #         content = ""
+    #         soup = BeautifulSoup(page.content, 'html.parser')
+    #         parts = soup.find_all("p")
+    #         for part in parts:
+    #             content += part.text
+            
+
+    # 9 - this is the new sentiment analysis part
+    # should iterate through each new article and calculate polarity and subjectivity
+    
+
 
     if articleGroups!=[]:
         try:
@@ -183,14 +215,6 @@ def hello_pubsub(event, context):
             dic = doc.to_dict()
 
             groups = dic['groupArr']
-
-            # dic['stringGroups'] = out
-
-            # remove any element from the new list that is already in the database
-            # for groupInDatab in groups:
-            #     group = json.loads(groupInDatab)
-            #     if(group in articleGroups):
-            #         articleGroups.remove(group)
             
             # now add all new elements to the database
             groups = []
