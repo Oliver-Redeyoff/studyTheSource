@@ -57,6 +57,7 @@ body{
     border: none;
 }
 
+
 #loadingText{
     margin-top: 150px;
     text-align: center;
@@ -187,4 +188,65 @@ body{
     color: rgba(255, 255, 255, 0.9);
     padding: 20px;
     font-family: Arial, Helvetica, sans-serif;
+}
+
+#article label{
+    color: white;
+    margin-left: 20%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#article #polarityBar{
+    border: 1px solid black;
+    width: 60%;
+    margin-left: 20%;
+    height: 10px;
+    margin-top: 5px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+}
+#article #negPolarityOuter{
+    border: 1px solid red;
+    display: inline-block;
+    width: calc(50% - 4px);
+    border-radius: 4px;
+    overflow: hidden;
+    height: 100%;
+}
+#article #negPolarityInner{
+    background-color: red;
+    display: inline-block;
+    height: 100%;
+    float: right;
+    transition: width 0.4s;
+}
+#article #posPolarityOuter{
+    border: 1px solid green;
+    display: inline-block;
+    width: calc(50% - 4px);
+    border-radius: 4px;
+    overflow: hidden;
+    height: 100%;
+}
+#article #posPolarityInner{
+    background-color: green;
+    display: inline-block;
+    height: 100%;
+    float: left;
+    transition: width 0.4s;
+}
+
+#article #subjOuter{
+    border: 1px solid royalblue;
+    border-radius: 4px;
+    width: 60%;
+    margin-left: 20%;
+    margin-top: 5px;
+    height: 10px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+}
+#article #subjInner{
+    height: 100%;
+    background-color: royalblue;
 }

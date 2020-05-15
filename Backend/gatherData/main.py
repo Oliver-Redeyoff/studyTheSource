@@ -212,12 +212,14 @@ def hello_pubsub(event, context):
                     content += part.text
                 print("got full content")
 
-                blob = TextBlob(content)
-                article["sentiment"] = [blob.sentiment.polarity, blob.sentiment.subjectivity]
-                print("got sentiment")
-                print("finished one article")
-                sentimentsCount += 1
-                break
+                # only count as content if it's more than a certain length (because of stupid cnn)
+                if len(content) > 1000:
+                    blob = TextBlob(content)
+                    article["sentiment"] = [blob.sentiment.polarity, blob.sentiment.subjectivity]
+                    print("got sentiment")
+                    print("finished one article")
+                    sentimentsCount += 1
+                    break
 
         # this defines how many sentiment analysises to perform per call of the function since it takes much time    
         if sentimentsCount == 1:

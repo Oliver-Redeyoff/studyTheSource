@@ -87,6 +87,21 @@ function display(data){
                     <p>` + cont + `</p>
                 </div>
                 `
+                if(group[p].hasOwnProperty('sentiment')){
+                    polarity = group[p].sentiment[0]
+                    console.log(polarity)
+                    subjectivity = group[p].sentiment[1]
+                    console.log(subjectivity)
+                    newHtml += `
+                    <label>Polarity :</label>
+                    <div id="polarityBar">
+                        <div id="negPolarityOuter"><div id="negPolarityInner" style="width:` + (polarity<0 ? (-polarity*100) : "0") + `%"></div></div>
+                        <div id="posPolarityOuter"><div id="posPolarityInner" style="width:` + (polarity>0 ? polarity*100 : "0") + `%"></div></div>
+                    </div>
+                    <label>Subjectivity :</label>
+                    <div id="subjOuter"><div id="subjInner" style="width: ` + subjectivity*100 + `%"></div></div>
+                    `
+                }
             } else {
                 newHtml += `
                 <div id="content">
