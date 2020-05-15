@@ -44,22 +44,21 @@ function display(data){
     console.log(data)
 
     if(data.length == 0){
-        console.log("no content")
         newHtml = "<p style='text-align: center;'>There is no content in the database</p>"
     }
 
     // this is each group of similar articles
     for(i in data){
+
         var group = JSON.parse(data[i])
 
-        // now populate ui with 
-
+        // now populate ui with articles in group
         newHtml += "<h3 id='articleCount' onclick='minimise(" + i + ")'>" + group.length + " similar articles</h3>"
-
         newHtml += "<div class='articleGroup'>"
 
-        // this is each article in the group .urlToImage
+        // this is each article in the group
         for(p in group){
+
             newHtml += '<div id="article" onclick="window.open(\'' + group[p].url + '\')">'
             newHtml += `
             <div id="title" style=\'background-image: url("` + group[p].urlToImage + `")\'>
@@ -73,9 +72,17 @@ function display(data){
             `
 
             if(group[p].content != null){
+                // get the content of the article and remove the +x chars at the end
+                var cont = group[p].content
+                for(var i=5 ; i<20 ; i++){
+                    if(cont.charAt(cont.length-i)=='+' && cont.charAt(cont.length-i-1)=='['){
+                        cont = cont.substring(0, cont.length-i-1)
+                        break
+                    }
+                }
                 newHtml += `
                 <div id="content">
-                    <p>` + group[p].content + `</p>
+                    <p>` + cont + `</p>
                 </div>
                 `
             } else {
@@ -85,16 +92,10 @@ function display(data){
                 </div>
                 `
             }
-            
             newHtml += "</div>"
-
         }
-
         newHtml += "</div>"
-
-
     }
-
     document.getElementById("bodyContainer").innerHTML = newHtml
 
 }
