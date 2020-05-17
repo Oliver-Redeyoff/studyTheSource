@@ -187,6 +187,7 @@ body{
     /* border: 1px solid green; */
     color: rgba(255, 255, 255, 0.9);
     padding: 20px;
+    padding-top: 50px;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -197,7 +198,7 @@ body{
 }
 
 #article #polarityBar{
-    border: 1px solid black;
+    /* border: 1px solid black; */
     width: 60%;
     margin-left: 20%;
     height: 10px;
@@ -208,7 +209,7 @@ body{
 #article #negPolarityOuter{
     border: 1px solid red;
     display: inline-block;
-    width: calc(50% - 4px);
+    width: calc(50% - 6px);
     border-radius: 4px;
     overflow: hidden;
     height: 100%;
@@ -223,7 +224,7 @@ body{
 #article #posPolarityOuter{
     border: 1px solid green;
     display: inline-block;
-    width: calc(50% - 4px);
+    width: calc(50% - 6px);
     border-radius: 4px;
     overflow: hidden;
     height: 100%;
@@ -237,8 +238,9 @@ body{
 }
 
 #article #subjOuter{
-    border: 1px solid royalblue;
+    border: 1px solid white;
     border-radius: 4px;
+    overflow: hidden;
     width: 60%;
     margin-left: 20%;
     margin-top: 5px;
@@ -248,5 +250,5 @@ body{
 }
 #article #subjInner{
     height: 100%;
-    background-color: royalblue;
+    background-color: rgba(153, 76, 76, 1);
 }

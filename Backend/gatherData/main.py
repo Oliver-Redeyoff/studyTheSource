@@ -162,39 +162,50 @@ def hello_pubsub(event, context):
                         if (article1['source']['id']==article2['source']['id'] and article1['title']==article2['title']):
 
                             print("found common element")
+
                             # copy all elements from group1 that aren't in group2 and delete group1
                             for elementCopy in articleGroups[group1]:
-                                if (elementCopy['source']['id']==article2['source']['id'] and elementCopy['title']==article2['title'])==False:
+                                
+                                # this bool determins if each element from the first group is copied
+                                copyElement = True
+
+                                # iterate through articles in the second group and see if the article exists there already
+                                for referenceElement in articleGroups[group2]:
+                                    # if yes, don't copy it
+                                    if elementCopy['source']['id']==referenceElement['source']['id'] and elementCopy['title']==referenceElement['title']:
+                                        copyElement = False
+                                        break
+                                
+                                # if the article wasn't in the second group, add it to the group
+                                if copyElement:
                                     articleGroups[group2].append(elementCopy)
 
+                            # then remove the group which has been merged
                             articleGroups[group1] = []
                             break
-    # old version checks whole json which would lead to duplications
-    # for group1 in range(0, len(articleGroups)):
-    #     for group2 in range(0, len(articleGroups)):
-    #         # print("comparing group " + str(group1) + " and group " + str(group2))
-    #         # don't join the same group with itself
-    #         if group1 != group2:
-    #             # if they have a common element, join
-    #             for element in articleGroups[group1]:
-    #                 if element in articleGroups[group2]:
-    #                     print("found common element")
-    #                     # copy all elements from group1 that aren't in group2 and delete group1
-    #                     for elementCopy in articleGroups[group1]:
-    #                         if (elementCopy in articleGroups[group2])==False:
-    #                             articleGroups[group2].append(elementCopy)
-    #                     # print(articleGroups[group1])
-    #                     articleGroups[group1] = []
-    #                     # print(articleGroups[group1])
-    #                     break
 
     # remove any empty list that would remain
     articleGroups = [x for x in articleGroups if x!=[]]
     print("end of joining groups")
 
 
+    # 8 - go through each article group and remove duplicates which could exist
+    # this is buggy though so for the moment let's not do it
+    # for group in articleGroups:
+
+    #     index = -1
+    #     for a1 in group:
+    #         index += 1
+    #         index2 = -1
+    #         for a2 in group:
+
+    #             if index != index2:
+    #                 if a1['title']==a2['title'] and a1['source']['id']==a2['source']['id']:
+    #                     group.remove(a2)
+            
+
     print("start of sentiment analysis")
-    # 8 - now that we know which articles we want, let's get the full content by scrapping the given url
+    # 9 - now that we know which articles we want, let's get the full content by scrapping the given url
     # then we perform a sentiment analysis using textBlob to get polarity and subjectivity if this hasn't been calculated already
     sentimentsCount = 0
     for group in articleGroups:
@@ -222,12 +233,12 @@ def hello_pubsub(event, context):
                     break
 
         # this defines how many sentiment analysises to perform per call of the function since it takes much time    
-        if sentimentsCount == 1:
+        if sentimentsCount == 2:
             break
 
     print("end of sentiment analysis")
 
-    # 9 - update database with new article groups
+    # 10 - update database with new article groups
     if articleGroups!=[]:
         try:
             

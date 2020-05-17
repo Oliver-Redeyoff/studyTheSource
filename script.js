@@ -82,32 +82,35 @@ function display(data){
                         break
                     }
                 }
-                newHtml += `
-                <div id="content">
-                    <p>` + cont + `</p>
-                </div>
-                `
+                // newHtml += `
+                // <div id="content">
+                //     <p>` + cont + `</p>
+                // </div>
+                // `
                 if(group[p].hasOwnProperty('sentiment')){
                     polarity = group[p].sentiment[0]
                     console.log(polarity)
                     subjectivity = group[p].sentiment[1]
                     console.log(subjectivity)
+                    // <label>Polarity : ` + (polarity*100).toFixed(2) + `%</label>
+                    //     <div id="polarityBar">
+                    //     <div id="negPolarityOuter"><div id="negPolarityInner" style="width:` + (polarity<0 ? (-polarity*100) : "0") + `%"></div></div>
+                    //     <div id="posPolarityOuter"><div id="posPolarityInner" style="width:` + (polarity>0 ? polarity*100 : "0") + `%"></div></div>
+                    // </div>
                     newHtml += `
-                    <label>Polarity :</label>
-                    <div id="polarityBar">
-                        <div id="negPolarityOuter"><div id="negPolarityInner" style="width:` + (polarity<0 ? (-polarity*100) : "0") + `%"></div></div>
-                        <div id="posPolarityOuter"><div id="posPolarityInner" style="width:` + (polarity>0 ? polarity*100 : "0") + `%"></div></div>
-                    </div>
-                    <label>Subjectivity :</label>
+                    <div id="content">
+                    <label>Subjectivity : ` + (subjectivity*100).toFixed(2) + `%</label>
                     <div id="subjOuter"><div id="subjInner" style="width: ` + subjectivity*100 + `%"></div></div>
+                    </div>
                     `
                 }
             } else {
-                newHtml += `
-                <div id="content">
-                    <p>Click to view the article</p>
-                </div>
-                `
+                // this is for articles that don't have content
+                // newHtml += `
+                // <div id="content">
+                //     <p>Click to view the article</p>
+                // </div>
+                // `
             }
             newHtml += "</div>"
         }
